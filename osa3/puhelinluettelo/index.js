@@ -7,6 +7,7 @@ var morgan = require('morgan')
 
 //app.use(morgan('tiny'))
 
+app.use(express.static('dist'))
 app.use(cors())
 app.use(express.json())
 
