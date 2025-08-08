@@ -1,11 +1,13 @@
 
 const express = require('express')
 const app = express()
+const cors = require('cors') 
 
 var morgan = require('morgan')
 
 //app.use(morgan('tiny'))
 
+app.use(cors())
 app.use(express.json())
 
 morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
@@ -87,7 +89,7 @@ app.post('/api/persons', (request, response) => {
   const person = {
     name: body.name,
     number: body.number,
-    id: Math.floor(Math.random(1) * 10000000000),
+    id: '' + Math.floor(Math.random(1) * 10000000000),
   }
 
   data = data.concat(person)
