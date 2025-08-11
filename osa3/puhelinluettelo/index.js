@@ -2,7 +2,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const mongoose = require('mongoose') 
+const mongoose = require('mongoose')
 const Person = require('./models/people.js')
 var morgan = require('morgan')
 
@@ -18,63 +18,38 @@ app.use(express.static('dist'))
 app.use(cors())
 app.use(express.json())
 
-morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('body', function (req) { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-
-
- let data = [
-    {
-      name: "Arto Hellas",
-      number: "040-123456",
-      id: "1"
-    },
-    {
-      name: "Ada Lovelace",
-      number: "39-44-5323523",
-      id: "2"
-    },
-    {
-      name: "Dan Abramov",
-      number: "12-43-234345",
-      id: "3"
-    },
-    {
-      name: "Mary Poppendieck",
-      number: "39-23-6423122",
-      id: "4"
-    }
-]
 
 app.get('/api/persons', (request, response, next) => {
   Person.find({}).then((person) => {
-    console.log(person)
     response.json(person)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id).then((person) => {
     response.json(person)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
 })
 
 app.get('/info', (request, response, next) => {
-    Person.find({}).then((person) => {
-      const count = person.length
-      const date = new Date().toString()
-      const info = `Phonebook has info for ${count} people\n${date}`
-      response.send(info)
-    })
+  Person.find({}).then((person) => {
+    const count = person.length
+    const date = new Date().toString()
+    const info = `Phonebook has info for ${count} people\n${date}`
+    response.send(info)
+  })
     .catch(error => next(error))
 })
 
@@ -87,8 +62,7 @@ app.post('/api/persons', (request, response, next) => {
     })
   }
 
-  Person.find({name: body.name}).then(result => {  
-    console.log(result.length)
+  Person.find({ name: body.name }).then(result => {
     if (result.length > 0) {
       return response.status(400).json({
         error: 'name must be unique'
@@ -103,9 +77,9 @@ app.post('/api/persons', (request, response, next) => {
     person.save().then(savedPerson => {
       response.json(savedPerson)
     })
-    .catch(error => next(error))
+      .catch(error => next(error))
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -124,7 +98,7 @@ app.put('/api/persons/:id', (request, response, next) => {
         response.json(updatedPerson)
       })
     })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
