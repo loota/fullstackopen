@@ -40,10 +40,20 @@ const App = () => {
         })
         .catch(error => {
           console.log(error)
-          setUiMessage(
-            `Information of '${newName}' has already been removed from server`
-          )
-          setPersons(persons.filter(n => n.name !== newName))
+            if (error.response.status === 404) {
+              setUiMessage(
+               `Information of '${newName}' has already been removed from server`
+            )
+            setTimeout(() => {
+              setUiMessage(null)
+            }, 5000)
+            setPersons(persons.filter(n => n.name !== newName))
+          } else if (error.response.status === 400) {
+            setUiMessage('validation error when trying to add a new person! ' + error.response.data.error)
+            setTimeout(() => {
+              setUiMessage(null)
+            }, 10000)
+          }
         })    
       }
       return
