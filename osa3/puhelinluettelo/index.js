@@ -46,6 +46,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response, next) => {
   Person.find({}).then((persons) => {
+    console.log(persons)
     const count = persons.length
     const date = new Date().toString()
     const info = `Phonebook has info for ${count} people\n${date}`
