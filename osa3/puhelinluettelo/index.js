@@ -5,6 +5,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const Person = require('./models/people.js')
 var morgan = require('morgan')
+require('dotenv').config()
 
 //app.use(morgan('tiny'))
 
@@ -44,8 +45,8 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response, next) => {
-  Person.find({}).then((person) => {
-    const count = person.length
+  Person.find({}).then((persons) => {
+    const count = persons.length
     const date = new Date().toString()
     const info = `Phonebook has info for ${count} people\n${date}`
     response.send(info)
