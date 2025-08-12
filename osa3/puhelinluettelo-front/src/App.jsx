@@ -19,6 +19,7 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [personNameFilter, setPersonNameFilter] = useState('')
   const [UiMessage, setUiMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -41,17 +42,17 @@ const App = () => {
         .catch(error => {
           console.log(error)
             if (error.response.status === 404) {
-              setUiMessage(
+              setErrorMessage(
                `Information of '${newName}' has already been removed from server`
             )
             setTimeout(() => {
-              setUiMessage(null)
+              setErrorMessage(null)
             }, 5000)
             setPersons(persons.filter(n => n.name !== newName))
           } else if (error.response.status === 400) {
-            setUiMessage('validation error when trying to add a new person! ' + error.response.data.error)
+            setErrorMessage('validation error when trying to add a new person! ' + error.response.data.error)
             setTimeout(() => {
-              setUiMessage(null)
+              setErrorMessage(null)
             }, 10000)
           }
         })    
@@ -70,9 +71,9 @@ const App = () => {
         })
       })
       .catch((error) => {
-        setUiMessage('validation error when trying to add a new person! ' + error.response.data.error)
+        setErrorMessage('validation error when trying to add a new person! ' + error.response.data.error)
         setTimeout(() => {
-          setUiMessage(null)
+          setErrorMessage(null)
         }, 10000)
       })
   }
@@ -117,7 +118,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={UiMessage} />
+      <Notification message={UiMessage} error={false} />
+      <Notification message={errorMessage} error={true} />
       <Filter onChangePersonNameFilter={onChangePersonNameFilter} />
       <h3>Add a new</h3>
       <PersonForm handleSubmit={handleSubmit} newName={newName} handleOnChangeNewName={handleOnChangeNewName} newPhoneNumber={newPhoneNumber} handleOnChangeNewPhoneNumber={handleOnChangeNewPhoneNumber} />

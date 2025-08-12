@@ -49,7 +49,7 @@ app.get('/info', (request, response, next) => {
     console.log(persons)
     const count = persons.length
     const date = new Date().toString()
-    const info = `Phonebook has info for ${count} people\n${date}`
+    const info = `<p>Phonebook has info for ${count} people</p><p>${date}</p>`
     response.send(info)
   })
     .catch(error => next(error))
