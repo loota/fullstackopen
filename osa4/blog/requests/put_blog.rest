@@ -1,3 +1,5 @@
-PUT http://localhost:3003/api/blogs/105
+PUT http://localhost:3003/api/blogs/68a308515b504dc1c987470c
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InV1c2kiLCJpZCI6IjY4OWM3M2FjNWNmYjg0NzlmMTQ3YTY1MSIsImlhdCI6MTc1NTUxNTc5MX0.l6FGeeDuDyJzXkOzNEw7jCGRE8lgEKCBP4adBwjqtIM
 
-{ "title" : "bar", "author": "babar", "url": "quux", "likes": 1}
+{"likes": 1 }

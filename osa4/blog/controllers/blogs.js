@@ -9,8 +9,11 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.get('/:id', async (request, response) => {
-  const blogs = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1, id: 1 })
-  response.json(blogs)
+  const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1, id: 1 })
+  if (blog === null) {
+    response.status(404).end()
+  }
+  response.json(blog)
 })
 
 blogsRouter.post('/', userExtractor, async (request, response) => {
@@ -56,13 +59,16 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   }
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
 
   if (!request.body || !request.body.likes) {
-    return response.status(400).end()
+    return response.status(400).json( { error: 'likes is required' } ).end()
   }
   if (!request.params.id) {
-    return response.status(400).end()
+    return response.status(400).json( { error: 'id is required' } ).end()
+  }
+  if (!request.decodedToken) {
+    response.status(401).json( { error: 'login token is required' } ).end()
   }
 
   const id = request.params.id
@@ -71,11 +77,15 @@ blogsRouter.put('/:id', async (request, response) => {
     if (!blog) {
       return response.status(404).end()
     }
+    if (blog.user.toString() !== request.user.id.toString()) {
+      response.status(401).json( { error: 'only the same user may modify a blog who has created it' } ).end()
+    }
     const { likes } = request.body
     blog.likes = likes
     await blog.save()
     response.json(blog)
   } catch (error) {
+    console.log(error)
     return response.status(404).end()
   }
 })

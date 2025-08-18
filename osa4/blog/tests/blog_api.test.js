@@ -200,6 +200,7 @@ describe('when using the blogs api', () => {
 
     await api
       .put(`/api/blogs/${id}`)
+      .set('Authorization', 'Bearer ' + token)
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -229,8 +230,11 @@ describe('when using the blogs api', () => {
 
     const id = '105'
 
+    const token = await login()
+
     await api
       .put(`/api/blogs/${id}`)
+      .set('Authorization', 'Bearer ' + token)
       .send(newBlog)
       .expect(404)
   })
