@@ -1,12 +1,19 @@
 const blogsRouter = require('express').Router()
-const Blog = require('../models/blogs.js')
+const Blog = require('../models/blog.js')
+const middleware = require('../utils/middleware.js')
+const userExtractor = middleware.userExtractor
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.get('/:id', async (request, response) => {
+  const blogs = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1, id: 1 })
+  response.json(blogs)
+})
+
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const blog = new Blog(request.body)
 
   if (!request.body.likes) {
@@ -17,13 +24,36 @@ blogsRouter.post('/', async (request, response) => {
     response.status(400).end()
   }
 
+  const user = request.user
+  if (!user) {
+    response.status(401).json({ 'error': 'Not logged in. Blogs can be added only when a user is logged in.' }).end()
+  }
+
+  blog.user = user.id
   const saved = await blog.save()
+  user.blogs = user.blogs.concat(saved._id)
+  await user.save()
   response.status(201).json(saved)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    response.status(404).end()
+  }
+
+  if (!request.decodedToken) {
+    response.status(401).end()
+  }
+
+  const user = request.user
+
+  if (blog.user.toString() === user.id.toString() ) {
+    await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  } else {
+    response.status(401).end()
+  }
 })
 
 blogsRouter.put('/:id', async (request, response) => {
