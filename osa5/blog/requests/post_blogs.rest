@@ -1,0 +1,5 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InV1c2kiLCJpZCI6IjY4OWM3M2FjNWNmYjg0NzlmMTQ3YTY1MSIsImlhdCI6MTc1NTUxNDg0MH0.iLfwaQCTywDS4ibupL7qtpOTdzZqAhhWF-_A2Yl34is
+
+{ "author": "Esco", "title": "Urjalasta kajahtaa spradam", "url": "www.example.com/lamb", "likes": 2, "user": "689b91b4200cebc5219c501b" }

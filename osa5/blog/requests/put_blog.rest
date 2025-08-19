@@ -1,0 +1,5 @@
+PUT http://localhost:3003/api/blogs/68a3489c24a9c23603dabaa2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InV1c2kiLCJpZCI6IjY4OWM3M2FjNWNmYjg0NzlmMTQ3YTY1MSIsImlhdCI6MTc1NTUzMjQ2OX0.MBnoD-Qvxn5UIVnY2SJemM29qtL7_MP-X-1nlrrgR4w
+
+{ "title": "Tuuba", "author": "Puss", "url": "fafas", "likes": 1, "user": "689c73ac5cfb8479f147a651" }
