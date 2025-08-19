@@ -10,7 +10,6 @@ const Blog = ({ blog, handleAddLike, loggedInUser, deleteBlog }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
-  const allInfo = { display: showAllInfo ? '' : 'none' }
   const toggleShowAllInfo = () => {
     setShowAllInfo(!showAllInfo)
   }
@@ -39,12 +38,14 @@ const Blog = ({ blog, handleAddLike, loggedInUser, deleteBlog }) => {
       <div>
         {blog.title} {blog.author}
         <button onClick={toggleShowAllInfo}>view</button>
-        <div style={allInfo}>
-          <p>{blog.url}</p>
-          <p>likes {blog.likes}</p><button onClick={addLike}>like</button>
-          <p>{blog.user ? blog.user.name : ''}</p>
-          {canDelete && <button onClick={deleteThisBlog}>Remove</button>}
-        </div>
+        {showAllInfo &&
+          <div>
+            <p>{blog.url}</p>
+            <p>likes {blog.likes}</p><button onClick={addLike}>like</button>
+            <p>{blog.user ? blog.user.name : ''}</p>
+            {canDelete && <button onClick={deleteThisBlog}>Remove</button>}
+          </div>
+        }
       </div>
     </div>
   )
