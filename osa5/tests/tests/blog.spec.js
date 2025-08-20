@@ -1,5 +1,13 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 
+async function login(page, username, password) {
+  await page.goto('/')
+  await page.getByTestId('username').waitFor()
+  await page.getByTestId('username').fill(username)
+  await page.getByTestId('password').fill(password)
+  await page.getByRole('button', { name: 'login' }).click()
+}
+
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post('http://localhost:3003/api/testing/reset')
@@ -14,6 +22,14 @@ describe('Blog app', () => {
     await page.goto('/')
   })
 
+  async function createNewBlog(page, title, author, url) {
+    await page.getByRole('button', { name: 'new blog' }).click()
+    await page.getByTestId('title').fill(title)
+    await page.getByTestId('author').fill(author)
+    await page.getByTestId('url').fill(url)
+    await page.getByRole('button', { name: 'create' }).click()
+  }
+
   test('Login form is shown', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByTestId('username')).toBeVisible()
@@ -22,24 +38,17 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.goto('/')
-      await page.getByTestId('username').waitFor()
-      await page.getByTestId('username').fill('mluukkai')
-      await page.getByTestId('password').fill('salainen')
-      await page.getByRole('button', { id: 'login' }).click()
+      await login(page, 'mluukkai', 'salainen')
       await expect(page.getByText('Matti Luukkainen logged in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.goto('/')
-      await page.getByTestId('username').waitFor()
-      await page.getByTestId('username').fill('mluukkai')
-      await page.getByTestId('password').fill('vilunki')
-      await page.getByRole('button', { name: 'login' }).click()
+      await login(page, 'mluukkai', 'salainen')
       await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
       await expect(page.getByTestId('username')).toBeVisible()
     })
   })
+
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
       await page.goto('/')
@@ -50,11 +59,7 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('title').fill('Varpusten katselun vaikutus koodauskokemukseen')
-      await page.getByTestId('author').fill('Lauri Lintuniemi')
-      await page.getByTestId('url').fill('http://example.com/pikkuvarpunen')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createNewBlog(page, 'Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
 
       const uiMessage = await page.locator('.uiMessage')
       await expect(uiMessage).toHaveCSS('color', 'rgb(0, 128, 0)')
@@ -63,11 +68,7 @@ describe('Blog app', () => {
     })
 
     test('a blog can be liked', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('title').fill('Varpusten katselun vaikutus koodauskokemukseen')
-      await page.getByTestId('author').fill('Lauri Lintuniemi')
-      await page.getByTestId('url').fill('http://example.com/pikkuvarpunen')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createNewBlog(page, 'Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
 
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.getByRole('button', { name: 'like' })).toBeVisible()
@@ -79,11 +80,7 @@ describe('Blog app', () => {
 
     test('a blog can be removed by the user who created it', async ({ page }) => {
       await page.getByRole('button', { name: 'new blog' }).waitFor()
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('title').fill('Varpusten katselun vaikutus koodauskokemukseen')
-      await page.getByTestId('author').fill('Lauri Lintuniemi')
-      await page.getByTestId('url').fill('http://example.com/pikkuvarpunen')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createNewBlog(page, 'Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
 
       page.on('dialog', dialog => dialog.accept());
 
@@ -101,44 +98,26 @@ describe('Blog app', () => {
           .getByRole('button', { name: 'like' }).click()
         await page.waitForTimeout(1000)
       }
-      async function createNewBlog(title, author, url) {
-        await page.getByRole('button', { name: 'new blog' }).click()
-        await page.getByTestId('title').fill(title)
-        await page.getByTestId('author').fill(author)
-        await page.getByTestId('url').fill(url)
-        await page.getByRole('button', { name: 'create' }).click()
-      }
 
-      createNewBlog('Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
+      await createNewBlog(page, 'Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
 
       await page.getByRole('button', { name: 'create' }).click()
       await page.getByRole('button', { name: 'view' }).click()
-      await page.waitForTimeout(1000);
-      await page.getByRole('button', { name: 'like' }).click()
-      await page.waitForTimeout(1000);
-      await page.getByRole('button', { name: 'like' }).click()
-      await page.waitForTimeout(1000);
-      await page.getByRole('button', { name: 'like' }).click()
-      await page.waitForTimeout(1000);
-      await page.getByRole('button', { name: 'new blog' }).click()
 
-      await page.getByTestId('title').fill('Nurmikon kasvattamisen syvin olemus')
-      await page.getByTestId('author').fill('Niko Nurmimies')
-      await page.getByTestId('url').fill('http://example.com/nurmikko')
-      await page.getByRole('button', { name: 'create' }).click()
+      await clickALikeButtonAndWait('Varpusten katselun vaikutus koodauskokemukseen')
+      await clickALikeButtonAndWait('Varpusten katselun vaikutus koodauskokemukseen')
+      await clickALikeButtonAndWait('Varpusten katselun vaikutus koodauskokemukseen')
+      await createNewBlog(page, 'Nurmikon kasvattamisen syvin olemus', 'Niko Nurmimies', 'http://example.com/nurmikko')
+
       await page.getByText('Nurmikon kasvattamisen syvin olemus Niko Nurmimies')
         .getByRole('button', { name: 'view' }).click()
-      await page.waitForTimeout(1000);
       await clickALikeButtonAndWait('Nurmikon kasvattamisen syvin olemus Niko Nurmimies')
       await clickALikeButtonAndWait('Nurmikon kasvattamisen syvin olemus Niko Nurmimies')
       await clickALikeButtonAndWait('Nurmikon kasvattamisen syvin olemus Niko Nurmimies')
       await clickALikeButtonAndWait('Nurmikon kasvattamisen syvin olemus Niko Nurmimies')
 
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('title').fill('Vaahteran vilvoittava kosketus')
-      await page.getByTestId('author').fill('Veikko Vaahtoihminen')
-      await page.getByTestId('url').fill('http://example.com/vaahtera')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createNewBlog(page, 'Vaahteran vilvoittava kosketus', 'Veikko Vaahtoihminen', 'http://example.com/vaahtera')
+
       await page.getByText('Vaahteran vilvoittava kosketus Veikko Vaahtoihminen').waitFor()
 
       await page.getByText('Vaahteran vilvoittava kosketus Veikko Vaahtoihminen')
@@ -179,29 +158,17 @@ describe('Blog app', () => {
         }
       })
 
-      await page.goto('/')
-      await page.getByTestId('username').waitFor()
-      await page.getByTestId('username').fill('mluukkai')
-      await page.getByTestId('password').fill('salainen')
-      await page.getByRole('button', { name: 'login' }).click()
+      await login(page, 'mluukkai', 'salainen')
     })
     test('a blog can be removed by the user who created it', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).waitFor()
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('title').fill('Varpusten katselun vaikutus koodauskokemukseen')
-      await page.getByTestId('author').fill('Lauri Lintuniemi')
-      await page.getByTestId('url').fill('http://example.com/pikkuvarpunen')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createNewBlog(page, 'Varpusten katselun vaikutus koodauskokemukseen', 'Lauri Lintuniemi', 'http://example.com/pikkuvarpunen')
 
       await expect(page.getByText('Varpusten katselun vaikutus koodauskokemukseen Lauri Lintuniemi')).toBeVisible()
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible()
 
       await page.getByRole('button', { name: 'logout' }).click()
-      await page.getByTestId('username').waitFor()
-      await page.getByTestId('username').fill('esko')
-      await page.getByTestId('password').fill('sekretos')
-      await page.getByRole('button', { name: 'login' }).click()
+      await login(page, 'esko', 'sekretos')
 
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
