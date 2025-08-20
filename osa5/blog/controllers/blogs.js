@@ -1,6 +1,5 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog.js')
-const User = require('../models/user.js')
 const middleware = require('../utils/middleware.js')
 const userExtractor = middleware.userExtractor
 
@@ -25,7 +24,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   }
 
   if (!request.body.title || !request.body.url) {
-    response.status(400).end()
+    response.status(400).json( {"error": "No title or url in request" }).end()
   }
 
   const user = request.user
