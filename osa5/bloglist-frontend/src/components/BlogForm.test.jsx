@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import BlogForm from './BlogForm'
 
-test('renders content', async () => {
+test('blog creation handler is called when create-button is clicked', async () => {
   const mockHandler = vi.fn()
   const { container } = render(<BlogForm createBlog={mockHandler} />)
   const user = userEvent.setup()

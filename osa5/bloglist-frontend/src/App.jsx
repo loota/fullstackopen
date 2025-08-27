@@ -82,7 +82,7 @@ const App = () => {
     const { title, author, url } = blogObject
     const newBlog = await blogService.create(title, author, url)
     setBlogsSorted(blogs.concat(newBlog))
-    triggerUiMessage(`${newBlog.title} by ${newBlog.author} added`)
+    triggerUiMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
     blogFormRef.current.toggleVisibility()
   }
 
