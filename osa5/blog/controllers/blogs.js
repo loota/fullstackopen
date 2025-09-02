@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog.js')
 const middleware = require('../utils/middleware.js')
 const userExtractor = middleware.userExtractor
+const ObjectId = require('mongodb').ObjectId
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
@@ -24,7 +25,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   }
 
   if (!request.body.title || !request.body.url) {
-    response.status(400).json( {"error": "No title or url in request" }).end()
+    response.status(400).json( { 'error': 'No title or url in request' }).end()
   }
 
   const user = request.user
@@ -75,6 +76,9 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
 
   const id = request.params.id
   try {
+    if (ObjectId.isValid(id) === false) {
+      return response.status(404).end()
+    }
     const blog = await Blog.findById(id)
     if (!blog) {
       return response.status(404).end()
