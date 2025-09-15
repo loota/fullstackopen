@@ -5,7 +5,7 @@ const Notification = () => {
   const notification = useSelector(({notification}) => {
     return notification
   })
-  if (notification === null) {
+  if (notification === null || notification === '') {
     return null
   }
   const style = {
