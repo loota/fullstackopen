@@ -6,6 +6,14 @@ import { setNotification } from '../reducers/notificationReducer'
 import Togglable from './Togglable'
 import BlogForm from './BlogForm'
 import { Link } from 'react-router-dom'
+import {
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+} from '@mui/material'
 
 const Blogs = () => {
   const user = useSelector(({ user }) => user)
@@ -34,19 +42,21 @@ const Blogs = () => {
         <Togglable buttonLabel="new blog" ref={blogFormRef}>
           <BlogForm createBlog={handleCreateBlog} />
         </Togglable>
-        <table>
-          <tbody>
-            {blogs.map((blog) => (
-              <tr key={blog.id}>
-                <td>
-                  <Link to={`/blogs/${blog.id}`}>
-                    {blog.title} {blog.author}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableBody>
+              {blogs.map((blog) => (
+                <TableRow key={blog.id}>
+                  <TableCell>
+                    <Link to={`/blogs/${blog.id}`}>
+                      {blog.title} {blog.author}
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </>
   )

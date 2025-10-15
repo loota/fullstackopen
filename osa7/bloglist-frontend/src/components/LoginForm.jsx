@@ -6,6 +6,7 @@ import loginService from '../services/login.js'
 import blogService from '../services/blogs.js'
 import { setUser } from '../reducers/userReducer.js'
 import { setErrorNotification } from '../reducers/notificationReducer.js'
+import { TextField, Button, Box } from '@mui/material'
 
 export const LoginForm = () => {
   const [username, setUsername] = useState('')
@@ -35,27 +36,34 @@ export const LoginForm = () => {
   }
   return (
     <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          data-testid="username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          data-testid="password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
+      <Box>
+        <Box sx={{ pt: 2, pb: 2 }}>
+          username
+          <TextField
+            sx={{ pl: 2 }}
+            type="text"
+            value={username}
+            name="Username"
+            data-testid="username"
+            onChange={({ target }) => setUsername(target.value)}
+          />{' '}
+        </Box>
+        <Box sx={{ pt: 2, pb: 2 }}>
+          {' '}
+          password
+          <TextField
+            sx={{ pl: 2 }}
+            type="password"
+            value={password}
+            name="Password"
+            data-testid="password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </Box>
+        <Button variant="contained" color="primary" type="submit">
+          login
+        </Button>
+      </Box>
     </form>
   )
 }

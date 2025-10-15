@@ -4,6 +4,7 @@ import { useMatch } from 'react-router-dom'
 import blogService from '../services/blogs'
 import { setBlogs } from '../reducers/blogsReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { List, ListItem, Divider, Button } from '@mui/material'
 
 const Blog = () => {
   const [comment, setComment] = useState('')
@@ -75,7 +76,7 @@ const Blog = () => {
     }
   }
   const Comment = ({ content }) => {
-    return <li>{content}</li>
+    return <ListItem>{content}</ListItem>
   }
   const handleComment = async (blogId) => {
     const modifiedBlog = await blogService.addComment(blogId, comment)
@@ -88,15 +89,28 @@ const Blog = () => {
   return (
     <div style={blogStyle} className="blog">
       <div>
-        {blog.title} {blog.author}
+        <h2>
+          {blog.title} {blog.author}
+        </h2>
         <div>
-          <p>{blog.url}</p>
+          <a href={blog.url}>{blog.url}</a>
           <p>
-            <span>likes</span> <span className="likes">{blog.likes}</span>
+            <span className="likes">{blog.likes}</span> <span>likes</span>
           </p>
-          <button onClick={addLike}>like</button>
-          <p>{blog.user ? blog.user.name : ''}</p>
-          {canDelete && <button onClick={deleteThisBlog}>Remove</button>}
+          <Button variant="contained" color="primary" onClick={addLike}>
+            like
+          </Button>
+          <p>added by {blog.user ? blog.user.name : ''}</p>
+          {canDelete && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={deleteThisBlog}
+            >
+              Remove
+            </Button>
+          )}
+          <Divider />
           <h3>comments</h3>
           <input
             type="text"
@@ -104,14 +118,20 @@ const Blog = () => {
             value={comment}
             onChange={({ target }) => setComment(target.value)}
           />
-          <button onClick={() => handleComment(blog.id)}>add comment</button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleComment(blog.id)}
+          >
+            add comment
+          </Button>
           {blog.comments.length > 0 && (
             <>
-              <ul>
-                {blog.comments.map((comment) => (
-                  <Comment key={comment} content={comment} />
+              <List>
+                {blog.comments.map((comment, index) => (
+                  <Comment key={index} content={comment} />
                 ))}
-              </ul>
+              </List>
             </>
           )}
         </div>
